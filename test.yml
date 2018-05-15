@@ -1,0 +1,13 @@
+---
+- hosts: "{{hosts}}"
+  gather_facts: yes
+  become: yes
+  become_user: root
+  pre_tasks:
+   - name: update yum cache
+     shell:  yum makecache    
+  roles:
+   - python
+   - abhay-installjava
+   - adduser
+

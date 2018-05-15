@@ -1,0 +1,18 @@
+---
+- name: installing python on server
+  yum: name=python  state=present update_cache=yes
+
+- name: Download pip on server
+  shell: curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" 
+ 
+- name : install pip 
+  shell: python get-pip.py
+
+- name: check pip on server 
+  shell: pip -V 
+  register: version
+- debug: 
+    msg: "{{version.stdout_lines}}"  
+
+- name: install flask on server
+  shell: pip install flask 

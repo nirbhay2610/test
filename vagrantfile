@@ -1,0 +1,18 @@
+config.vm.define "appserver" do |appserver|
+   appserver.vm.hostname = 'appserver'
+   appserver.vm.network "private_network", ip: "10.10.10.20"
+   appserver.vm.provision "ansible" do |ansible|
+     ansible.playbook = "test.yml"
+   end
+   appserver.vm.provider :virtualbox do |v|
+     v.customize ["modifyvm", :id, "--memory", 1024]
+     v.customize ["modifyvm", :id, "--name", "appserver"]
+   end
+   appserver.vm.provider "virtualbox" do |v|
+   v.customize ["modifyvm", :id, "--cpuexecutioncap", "70"]
+   end
+
+   appserver.vm.provider "virtualbox" do |v|
+   v.memory = 1024
+   v.cpus = 2
+   end

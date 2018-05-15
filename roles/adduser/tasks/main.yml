@@ -1,0 +1,65 @@
+---
+
+- name: installing makepasswd on server
+  yum:  name=expect state=present  update_cache=true
+ 
+- name: Users | Generate password for new user
+  shell: mkpasswd
+  register: user_password
+
+- debug:
+   msg: "{{user_password.stdout_lines }}"
+
+- name: Users | Create new user
+  user: name=abhay createhome=yes home=/home/abhay generate_ssh_key=yes shell=/bin/bash password=${user_password.stdout}
+
+- name: post task 
+  shell: echo 'goodbye'
+
+
+- name: abhay
+  shell: echo 'nginx'
+
+- name: Add directory in server
+  file: path=/home/abhay/rakuten/ state=directory
+
+- name: Copy files to app directory
+  template: src={{item.src}} dest={{item.dest}}
+  with_items:
+    - { src: 'templates/app.py',       dest: '/home/abhay/rakuten/app.py' }
+    - { src: 'templates/app.service',  dest: '/usr/lib/systemd/system/' }
+
+- name:  give permission to script
+  shell: chmod 775 /home/abhay/rakuten/app.py
+
+- name: Disable selinux in server
+  shell: sed 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+  shell: setenforce  0
+  shell: getenforce
+  register: status
+
+- debug:
+   msg: "{{status.stdout_lines }}"
+
+- name: install epel repo in server
+  shell: yum install epel-release -y
+
+- name: Install Nginx server
+  yum:  name=nginx state=latest
+
+- name: copy the nginx file in server
+  copy: src=templates/nginxapp.conf dest=/etc/nginx/conf.d/
+
+- name: start and enable Nginx server
+  service: name=nginx state=started enabled=yes
+
+- name: start and enable app server
+  service: name=app state=started enabled=yes
+
+- name: Check current timezone
+  shell: timedatectl set-timezone "Asia/Kolkata"
+  shell: date
+  register: value
+
+- debug: 
+   msg: "{{value.stdout_lines}}"

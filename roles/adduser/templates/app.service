@@ -1,0 +1,15 @@
+[Unit]
+Description=Python Test application
+After=multi-user.target
+
+[Service]
+User=abhay
+Group=abhay
+ExecStart= /bin/nohup /bin/python /home/abhay/rakuten/app.py  &
+SyslogIdentifier=app
+#RestartSec=10s
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

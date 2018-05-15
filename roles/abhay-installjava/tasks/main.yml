@@ -1,0 +1,11 @@
+---
+
+- name: install the java
+  yum:  name=java*  state=present  update_cache=true 
+
+- name: check java on server
+  shell: java -version
+  register: version
+
+- debug: 
+   msg: "{{version.stdout_lines}}"   
